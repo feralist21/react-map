@@ -12,4 +12,7 @@ export default defineConfig({
         },
     },
     plugins: [react()],
+    server: {
+        host: 'react-maps.loc'
+    }
 });
