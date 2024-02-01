@@ -13,6 +13,7 @@ export default defineConfig({
     },
     plugins: [react()],
     server: {
-        host: 'react-maps.loc'
+        host: 'react-maps.loc',
+        port: '5174'
     }
 });
