@@ -65,7 +65,6 @@ function App() {
     };
 
     const placeMarksObject = useMemo(() => {
-        console.log("Мемо!!");
         return addressList.map((address) => {
             return address.position.split(" ");
         });
