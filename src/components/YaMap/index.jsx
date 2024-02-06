@@ -1,66 +1,28 @@
 import { clsx } from "clsx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { MapWidget } from "@components/YaMap/map-widget.js";
 
 function YaMap({ className, placemarks }) {
-    const [localMap, setLocalMap] = useState();
-    const ymap = useRef();
+    const containerMapRef = useRef(null);
+    const mapRef = useRef(null);
 
     useEffect(() => {
-        console.log('Еффект создания карты');
-        let map = "";
-
-        async function createMap() {
-            const ymaps = window.ymaps;
-            await ymaps.ready();
-
-            map = new ymaps.Map(ymap.current, {
-                center: [55.76, 37.64],
-                zoom: 7,
-            });
-            setLocalMap(map);
+        if (mapRef.current === null) {
+            mapRef.current = new MapWidget(containerMapRef.current);
         }
 
-        createMap();
+        const map = mapRef.current;
 
-        return () => {
-            setTimeout(() => {
-                map.destroy(); // TODO Исправить этот костыль
-            }, 2000);
-        };
-    }, []);
-
-    useEffect(() => {
-        console.log('Еффект создания меток');
         if (placemarks.length === 0) {
+            map.cleanGeoObject();
             return;
         }
 
-        localMap.geoObjects.removeAll();
+        map.cleanGeoObject();
+        map.createGeoObject(map.createPlacemarks(placemarks));
+    }, [placemarks]);
 
-        const ymapPlacemarks = placemarks.map((mark) => {
-            return new ymaps.Placemark([mark[1], mark[0]], {
-                iconImageSize: [36, 36],
-                iconImageOffset: [-18, -36],
-            });
-        });
-
-        const myGeoObjects = new ymaps.GeoObjectCollection();
-
-        ymapPlacemarks.forEach((element) => {
-            myGeoObjects.add(element);
-        });
-        localMap.geoObjects.add(myGeoObjects);
-        localMap.setBounds(myGeoObjects.getBounds(), {
-            checkZoomRange: true,
-        });
-        localMap.setBounds(myGeoObjects.getBounds(), { checkZoomRange: true }).then(() => {
-            if (localMap.getZoom() > 12) localMap.setZoom(12);
-        });
-
-        console.log(ymapPlacemarks, "marks");
-    }, [placemarks, localMap]);
-
-    return <div ref={ymap} className={clsx("h-[600px]", className)}></div>;
+    return <div ref={containerMapRef} className={clsx("h-[600px]", className)}></div>;
 }
 
 export default YaMap;

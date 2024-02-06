@@ -70,6 +70,12 @@ function App() {
         });
     }, [addressList]);
 
+    const deleteAddress = (event) => {
+        setAddressList((items) =>
+            items.filter((address) => address.name !== event.target.dataset.name),
+        );
+    };
+
     return (
         <>
             <div className="pt-32 flex flex-col gap-y-10 w-[1200px] mx-auto">
@@ -91,7 +97,9 @@ function App() {
                                 <Dropdown list={suggestions} handleClick={additionQuery} />
                             )}
                         </div>
-                        {addressList.length > 0 && <AddressList list={addressList} />}
+                        {addressList.length > 0 && (
+                            <AddressList list={addressList} handleClick={deleteAddress} />
+                        )}
                     </div>
                     <YaMap placemarks={placeMarksObject} className="w-2/3" />
                 </div>
